@@ -1,3 +1,5 @@
+import "../intercourse_screen.dart";
+import "../common.dart";
 import 'package:flutter/material.dart';
 
 import '../core/constants.dart';
