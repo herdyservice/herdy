@@ -23,18 +23,24 @@ jobs:
           channel: stable
           cache: true
 
-      - name: Générer le dossier android sans toucher à lib/
-        run: flutter create --platforms=android --org com.herdy .
+      - name: Générer le dossier android de manière isolée
+        run: |
+          if [ ! -d "android" ]; then
+            mkdir -p /tmp/flutter_temp
+            flutter create --platforms=android --org com.herdy --project-name ma_sorciere /tmp/flutter_temp
+            cp -r /tmp/flutter_temp/android ./android
+            rm -rf /tmp/flutter_temp
+          fi
 
       - name: Dépendances
         run: flutter pub get
 
       - name: Compiler l'APK
-        run: flutter build apk --release --no-tree-shake-icons
+        run: flutter build apk --debug
 
       - name: Publier l'APK
         uses: actions/upload-artifact@v4
         with:
           name: ma-sorciere-apk
-          path: build/app/outputs/flutter-apk/app-release.apk
+          path: build/app/outputs/flutter-apk/app-debug.apk
           if-no-files-found: error
