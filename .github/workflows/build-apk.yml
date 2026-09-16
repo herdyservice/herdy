@@ -26,9 +26,6 @@ jobs:
       - name: Dépendances
         run: flutter pub get
 
-      - name: Générer le projet Android
-        run: flutter create . --platform android --org com.herdy
-
       - name: Compiler l'APK
         run: flutter build apk --release --no-tree-shake-icons
 
