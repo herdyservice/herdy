@@ -23,8 +23,6 @@ jobs:
           channel: stable
           cache: true
 
-      # flutter create tourne dans un dossier TEMPORAIRE, en dehors du dépôt,
-      # pour ne jamais risquer d'écraser lib/main.dart, pubspec.yaml ou test/.
       - name: Générer android/ (isolé) puis le copier dans le projet
         run: |
           scaffold="$(mktemp -d)"
@@ -36,9 +34,6 @@ jobs:
         run: |
           test -f lib/main.dart
           grep -q "MaSorciereApp" lib/main.dart
-
-      - name: Appliquer les patchs Android
-        run: python3 tool/patch_android.py
 
       - name: Dépendances
         run: flutter pub get
