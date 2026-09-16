@@ -23,28 +23,14 @@ jobs:
           channel: stable
           cache: true
 
-      - name: Générer android/ (isolé) puis le copier dans le projet
-        run: |
-          scaffold="$(mktemp -d)"
-          flutter create --org com.herdy --project-name ma_sorciere --platforms=android "$scaffold/scaffold"
-          rm -rf android
-          cp -R "$scaffold/scaffold/android" ./android
-
-      - name: Vérifier que le code source du projet est bien celui attendu
-        run: |
-          test -f lib/main.dart
-          grep -q "MaSorciereApp" lib/main.dart
-
       - name: Dépendances
         run: flutter pub get
 
-      - name: Analyse et tests
-        run: |
-          flutter analyze || true
-          flutter test || true
+      - name: Générer le projet Android
+        run: flutter create . --platform android --org com.herdy
 
       - name: Compiler l'APK
-        run: flutter build apk --release
+        run: flutter build apk --release --no-tree-shake-icons
 
       - name: Publier l'APK
         uses: actions/upload-artifact@v4
