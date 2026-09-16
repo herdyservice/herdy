@@ -23,11 +23,8 @@ jobs:
           channel: stable
           cache: true
 
-      - name: Générer le dossier android de manière isolée
-        run: |
-          scaffold="$(mktemp -d)"
-          flutter create --org com.herdy --project-name ma_sorciere --platforms=android "$scaffold/scaffold"
-          cp -R "$scaffold/scaffold/android" ./android
+      - name: Générer le dossier android sans toucher à lib/
+        run: flutter create --platforms=android --org com.herdy .
 
       - name: Dépendances
         run: flutter pub get
