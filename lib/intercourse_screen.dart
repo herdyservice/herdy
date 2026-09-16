@@ -1,3 +1,6 @@
+import "common.dart";
+import "models.dart";
+import "constants.dart";
 import 'package:flutter/material.dart';
 
 import '../core/constants.dart';
@@ -146,7 +149,7 @@ class _IntercourseScreenState extends State<IntercourseScreen> {
               decoration: const InputDecoration(hintText: 'Notes privées…'),
             ),
           ),
-          const NoticeBox(
+          NoticeBox(
             text: disclaimerFertile,
             icon: Icons.warning_amber_rounded,
           ),
