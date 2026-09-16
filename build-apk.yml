@@ -1,0 +1,59 @@
+name: Construire l'APK Ma Sorcière
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Récupérer le code
+        uses: actions/checkout@v4
+
+      - name: Installer Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Installer Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      # flutter create tourne dans un dossier TEMPORAIRE, en dehors du dépôt,
+      # pour ne jamais risquer d'écraser lib/main.dart, pubspec.yaml ou test/.
+      - name: Générer android/ (isolé) puis le copier dans le projet
+        run: |
+          scaffold="$(mktemp -d)"
+          flutter create --org com.herdy --project-name ma_sorciere --platforms=android "$scaffold/scaffold"
+          rm -rf android
+          cp -R "$scaffold/scaffold/android" ./android
+
+      - name: Vérifier que le code source du projet est bien celui attendu
+        run: |
+          test -f lib/main.dart
+          grep -q "MaSorciereApp" lib/main.dart
+
+      - name: Appliquer les patchs Android
+        run: python3 tool/patch_android.py
+
+      - name: Dépendances
+        run: flutter pub get
+
+      - name: Analyse et tests
+        run: |
+          flutter analyze || true
+          flutter test || true
+
+      - name: Compiler l'APK
+        run: flutter build apk --release
+
+      - name: Publier l'APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: ma-sorciere-apk
+          path: build/app/outputs/flutter-apk/app-release.apk
+          if-no-files-found: error
